@@ -1,6 +1,7 @@
 package inc.premzl.f5.Processing.Image;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class DCTProcessing {
@@ -231,5 +232,19 @@ public class DCTProcessing {
         }
 
         return reverseZigzags;
+    }
+
+    public static List<int[]> quantization(List<double[]> blocks, int N) {
+        List<int[]> quantized = new ArrayList<>();
+
+        for (double[] block : blocks) {
+            int[] quantizedBlock = Arrays.stream(block).mapToInt(value -> (int) value).toArray();
+            for (int i = 63; i >= 63 - N; i--) {
+                quantizedBlock[i] = 0;
+            }
+            quantized.add(quantizedBlock);
+        }
+
+        return quantized;
     }
 }
