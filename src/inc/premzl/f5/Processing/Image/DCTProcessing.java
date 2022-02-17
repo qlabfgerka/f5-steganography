@@ -148,7 +148,7 @@ public class DCTProcessing {
         return zigzags;
     }
 
-    public static List<double[][][]> reverseZigzag(List<double[]> blocks) {
+    public static List<double[][][]> reverseZigzag(List<int[]> blocks) {
         List<double[][][]> reverseZigzags = new ArrayList<>();
         double[][][] reverseZigzag = new double[8][8][3];
 

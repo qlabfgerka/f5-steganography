@@ -1,9 +1,12 @@
 package inc.premzl.f5.Processing.Text;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class TextProcessing {
     public static String getFileContent(String path) throws IOException {
@@ -30,6 +33,13 @@ public class TextProcessing {
         return bits.toString();
     }
 
+    public static String getString(String binary) {
+        return Arrays.stream(binary.split("(?<=\\G.{8})"))
+                .map(s -> Integer.parseInt(s, 2))
+                .map(i -> "" + (char) i.intValue())
+                .collect(Collectors.joining(""));
+    }
+
     public static String getLengthBitString(String content) {
         StringBuilder prefix = new StringBuilder();
         long length = Integer.toUnsignedLong(content.length());
@@ -40,6 +50,17 @@ public class TextProcessing {
     }
 
     public static String getPrependedBinaryContent(String path) throws IOException {
-        return getLengthBitString(getFileContent(path)) + getBitString(getFileContentBinary(path));
+        String content = getBitString(getFileContentBinary(path));
+        return getLengthBitString(content) + content;
+    }
+
+    public static void writeToFile(String filename, String content) {
+        try {
+            FileWriter writer = new FileWriter(filename);
+            writer.write(content);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
