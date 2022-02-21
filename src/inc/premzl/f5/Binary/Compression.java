@@ -1,11 +1,13 @@
-package inc.premzl.f5.Processing.Text;
+package inc.premzl.f5.Binary;
 
 import inc.premzl.f5.Models.DecompressionWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BinaryProcessing {
+import static inc.premzl.f5.Binary.BinaryOperations.*;
+
+public class Compression {
     public static String compress(List<int[]> blocks) {
         StringBuilder bits = new StringBuilder();
         int zeroCounter;
@@ -44,7 +46,7 @@ public class BinaryProcessing {
         int width = binaryToUnsignedNumber(binary.substring(16, 32));
         int offset = binaryToUnsignedNumber(binary.substring(32, 36));
 
-        for (int i = 36; i < binary.length() - (offset == 0 ? 8 : offset); ) {
+        for (int i = 36; i + 7 < binary.length() - (offset == 0 ? 8 : offset); ) {
             if (counter >= 64) {
                 blocks.add(block);
                 counter = 0;
@@ -88,53 +90,5 @@ public class BinaryProcessing {
         blocks.add(block);
 
         return new DecompressionWrapper(blocks, height, width);
-    }
-
-    public static int binaryToSignedNumber(String bitString) {
-        int num = 0;
-        for (int i = bitString.length() - 1; i >= 1; i--) {
-            if (bitString.charAt(i) == '1') num |= 1L << (bitString.length() - i - 1);
-        }
-        return bitString.charAt(0) == '0' ? num : -num;
-    }
-
-    public static int binaryToUnsignedNumber(String bitString) {
-        int num = 0;
-        for (int i = bitString.length() - 1; i >= 0; i--) {
-            if (bitString.charAt(i) == '1') num |= 1L << (bitString.length() - i - 1);
-        }
-        return num;
-    }
-
-    public static String signedNumberToBinary(int number, int bitNum) {
-        StringBuilder bits = new StringBuilder();
-
-        if (number < 0) bits.append("1");
-        else bits.append(0);
-
-        number = Math.abs(number);
-        for (int i = bitNum - 2; i >= 0; i--) {
-            bits.append((number >> i) & 1);
-        }
-
-        return bits.toString();
-    }
-
-    public static String unsignedNumberToBinary(int number, int bitNum) {
-        StringBuilder bits = new StringBuilder();
-
-        for (int i = bitNum - 1; i >= 0; i--) {
-            bits.append((number >> i) & 1);
-        }
-
-        return bits.toString();
-    }
-
-    public static int countBitsUnsigned(int number) {
-        return (int) (Math.log(Math.abs(number)) / Math.log(2) + 1);
-    }
-
-    public static int countBitsSigned(int number) {
-        return countBitsUnsigned(number) + 1;
     }
 }

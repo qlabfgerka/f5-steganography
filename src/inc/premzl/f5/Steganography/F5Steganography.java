@@ -1,8 +1,8 @@
-package inc.premzl.f5.Processing.Image;
-
-import inc.premzl.f5.Processing.Text.BinaryProcessing;
+package inc.premzl.f5.Steganography;
 
 import java.util.List;
+
+import static inc.premzl.f5.Binary.BinaryOperations.binaryToUnsignedNumber;
 
 public class F5Steganography {
     public static void hideMessage(List<int[]> blocks, int N, int M, String message) {
@@ -40,7 +40,7 @@ public class F5Steganography {
                 bits.append(c1 ^ c2);
                 bits.append(c2 ^ c3);
 
-                if (bits.length() == 32) limit = BinaryProcessing.binaryToUnsignedNumber(bits.toString());
+                if (bits.length() == 32) limit = binaryToUnsignedNumber(bits.toString());
             }
         }
         return bits.substring(32, bits.length());

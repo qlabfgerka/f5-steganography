@@ -1,16 +1,20 @@
 package inc.premzl.f5;
 
+import inc.premzl.f5.Metrics.Metrics;
 import inc.premzl.f5.Models.DecompressionWrapper;
-import inc.premzl.f5.Processing.Image.DCTProcessing;
-import inc.premzl.f5.Processing.Image.F5Steganography;
-import inc.premzl.f5.Processing.Image.ImageProcessing;
-import inc.premzl.f5.Processing.Text.BinaryProcessing;
-import inc.premzl.f5.Processing.Text.TextProcessing;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 
 import java.util.List;
 import java.util.Objects;
+
+import static inc.premzl.f5.Binary.BinaryOperations.*;
+import static inc.premzl.f5.Binary.Compression.compress;
+import static inc.premzl.f5.Binary.Compression.decompress;
+import static inc.premzl.f5.DCT.DCT.*;
+import static inc.premzl.f5.Files.FileOperations.*;
+import static inc.premzl.f5.Steganography.F5Steganography.hideMessage;
+import static inc.premzl.f5.Steganography.F5Steganography.readMessage;
 
 public class F5 {
     static {
@@ -18,38 +22,41 @@ public class F5 {
     }
 
     public static void main(String[] args) throws Exception {
-        if (args.length != 5) throw new Exception("Invalid arguments size");
+        //if (args.length != 5) throw new Exception("Invalid arguments size");
         final String compressOutput = "assets\\images\\out.bin";
         final String decodedOutput = "assets\\text\\out.txt";
 
         if (Objects.equals(args[1], "h")) {
-            String compressed;
-            Mat image = ImageProcessing.openImage(args[0]);
-            String prepended = TextProcessing.getPrependedBinaryContent(args[2]);
-            List<double[][][]> blocks = ImageProcessing.getBlocks(image);
-            blocks = DCTProcessing.DCT(blocks);
-            List<double[]> zigzag = DCTProcessing.zigzag(blocks);
-            List<int[]> quantized = DCTProcessing.quantization(zigzag, Integer.parseInt(args[3]));
-            F5Steganography.hideMessage(quantized, Integer.parseInt(args[3]), Integer.parseInt(args[4]), prepended);
-            compressed = BinaryProcessing.compress(quantized);
-            ImageProcessing.compressFile(
+            Mat image = openImage(args[0]);
+            List<double[][][]> blocks = getBlocks(image);
+            blocks = DCT(blocks);
+            List<int[]> quantized = quantization(zigzag(blocks), Integer.parseInt(args[3]));
+            hideMessage(quantized, Integer.parseInt(args[3]), Integer.parseInt(args[4]), getPrependedBinaryContent(args[2]));
+            String compressed = compress(quantized);
+            compressFile(
                     compressOutput,
-                    BinaryProcessing.unsignedNumberToBinary(image.rows(), 16)
-                            + BinaryProcessing.unsignedNumberToBinary(image.cols(), 16)
-                            + BinaryProcessing.unsignedNumberToBinary(compressed.length() % 8, 4)
+                    unsignedNumberToBinary(image.rows(), 16)
+                            + unsignedNumberToBinary(image.cols(), 16)
+                            + unsignedNumberToBinary(compressed.length() % 8, 4)
                             + compressed
             );
         } else if (Objects.equals(args[1], "e")) {
-            String binary = TextProcessing.getBitString(TextProcessing.getFileContentBinary(args[0]));
-            DecompressionWrapper wrapper = BinaryProcessing.decompress(binary);
-            String binaryMessage = F5Steganography.readMessage(wrapper.getBlocks(),
+            DecompressionWrapper wrapper = decompress(getBitString(getFileContentBinary(args[0])));
+            String message = getString(readMessage(wrapper.getBlocks(),
                     Integer.parseInt(args[3]),
-                    Integer.parseInt(args[4]));
-            List<double[][][]> blocks = DCTProcessing.reverseZigzag(wrapper.getBlocks());
-            blocks = DCTProcessing.IDCT(blocks);
-            Mat image = ImageProcessing.getMat(blocks, wrapper.getHeight(), wrapper.getWidth());
-            ImageProcessing.writeImage(args[2], image);
-            TextProcessing.writeToFile(decodedOutput, TextProcessing.getString(binaryMessage));
+                    Integer.parseInt(args[4])));
+            System.out.println(message);
+            List<double[][][]> blocks = reverseZigzag(wrapper.getBlocks());
+            blocks = IDCT(blocks);
+            writeImage(args[2], getMat(blocks, wrapper.getHeight(), wrapper.getWidth()));
+            writeToFile(decodedOutput, message);
+        } else {
+            System.out.println("PSNR: " + Metrics.PSNR(openImage(args[0]), openImage(args[1])));
+            System.out.println("SHANNON ENTROPY ORIGINAL: " + Metrics.shannonEntropy(openImage(args[0])));
+            System.out.println("SHANNON ENTROPY EDITED: " + Metrics.shannonEntropy(openImage(args[1])));
+            System.out.println("BLOKOVNOST ORIGINAL: " + Metrics.blockage(openImage(args[0])));
+            System.out.println("BLOKOVNOST EDITED: " + Metrics.blockage(openImage(args[1])));
         }
+
     }
 }
