@@ -8,14 +8,14 @@ import java.util.List;
 import static inc.premzl.f5.Binary.BinaryOperations.*;
 
 public class Compression {
-    public static String compress(List<int[]> blocks) {
+    public static String compress(List<int[]> blocks, int N) {
         StringBuilder bits = new StringBuilder();
         int zeroCounter;
 
         for (int[] block : blocks) {
             zeroCounter = 0;
             bits.append(signedNumberToBinary(block[0], 12));
-            for (int i = 1; i < block.length; i++) {
+            for (int i = 1; i < 64 - N; i++) {
                 if (block[i] != 0) {
                     if (zeroCounter == 0) {
                         bits.append("1")
@@ -38,7 +38,7 @@ public class Compression {
         return bits.toString();
     }
 
-    public static DecompressionWrapper decompress(String binary) {
+    public static DecompressionWrapper decompress(String binary, int N) {
         List<int[]> blocks = new ArrayList<>();
         int[] block = new int[64];
         int counter = 0, length;
@@ -47,7 +47,7 @@ public class Compression {
         int offset = binaryToUnsignedNumber(binary.substring(32, 36));
 
         for (int i = 36; i + 7 < binary.length() - (offset == 0 ? 8 : offset); ) {
-            if (counter >= 64) {
+            if (counter >= 64 - N) {
                 blocks.add(block);
                 counter = 0;
             }
@@ -70,7 +70,7 @@ public class Compression {
                     length = binaryToUnsignedNumber(binary.substring(i, i + 6));
                     i += 6;
 
-                    if (length + counter == 64) {
+                    if (length + counter == 64 - N) {
                         blocks.add(block);
                         counter = 0;
                     } else {

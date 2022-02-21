@@ -1,10 +1,7 @@
 package inc.premzl.f5.Binary;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.Collectors;
-
-import static inc.premzl.f5.Files.FileOperations.getFileContentBinary;
 
 public class BinaryOperations {
     public static int binaryToSignedNumber(String bitString) {
@@ -78,6 +75,19 @@ public class BinaryOperations {
                 .collect(Collectors.joining(""));
     }
 
+    public static byte[] getBytes(String binary) {
+        byte[] bytes = new byte[binary.length() / 8];
+        int index = 0;
+
+        for (int i = 0; i < binary.length(); ) {
+            bytes[index] = (byte) ((short) Integer.parseInt(binary.substring(i, i + 8), 2));
+            ++index;
+            i += 8;
+        }
+
+        return bytes;
+    }
+
     public static String getLengthBitString(String content) {
         StringBuilder prefix = new StringBuilder();
         long length = Integer.toUnsignedLong(content.length());
@@ -87,8 +97,8 @@ public class BinaryOperations {
         return prefix.toString();
     }
 
-    public static String getPrependedBinaryContent(String path) throws IOException {
-        String content = getBitString(getFileContentBinary(path));
+    public static String getPrependedBinaryContent(byte[] bytes) {
+        String content = getBitString(bytes);
         return getLengthBitString(content) + content;
     }
 }
