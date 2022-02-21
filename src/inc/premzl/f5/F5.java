@@ -43,6 +43,7 @@ public class F5 {
             String binary = TextProcessing.getBitString(TextProcessing.getFileContentBinary(args[0]));
             DecompressionWrapper wrapper = BinaryProcessing.decompress(binary);
             String binaryMessage = F5Steganography.readMessage(wrapper.getBlocks(),
+                    Integer.parseInt(args[3]),
                     Integer.parseInt(args[4]));
             List<double[][][]> blocks = DCTProcessing.reverseZigzag(wrapper.getBlocks());
             blocks = DCTProcessing.IDCT(blocks);

@@ -30,7 +30,7 @@ public class BinaryProcessing {
                     ++zeroCounter;
                 }
             }
-            bits.append("0").append(unsignedNumberToBinary(zeroCounter, 6));
+            if (zeroCounter > 0) bits.append("0").append(unsignedNumberToBinary(zeroCounter, 6));
         }
 
         return bits.toString();
@@ -44,7 +44,11 @@ public class BinaryProcessing {
         int width = binaryToUnsignedNumber(binary.substring(16, 32));
         int offset = binaryToUnsignedNumber(binary.substring(32, 36));
 
-        for (int i = 36; i < binary.length() - offset; ) {
+        for (int i = 36; i < binary.length() - (offset == 0 ? 8 : offset); ) {
+            if (counter >= 64) {
+                blocks.add(block);
+                counter = 0;
+            }
             if (counter == 0) {
                 block = new int[64];
 
@@ -79,13 +83,9 @@ public class BinaryProcessing {
                         ++counter;
                     }
                 }
-
-                if (counter >= 64) {
-                    blocks.add(block);
-                    counter = 0;
-                }
             }
         }
+        blocks.add(block);
 
         return new DecompressionWrapper(blocks, height, width);
     }
@@ -111,6 +111,8 @@ public class BinaryProcessing {
 
         if (number < 0) bits.append("1");
         else bits.append(0);
+
+        number = Math.abs(number);
         for (int i = bitNum - 2; i >= 0; i--) {
             bits.append((number >> i) & 1);
         }

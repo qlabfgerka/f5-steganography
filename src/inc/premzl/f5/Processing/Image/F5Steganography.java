@@ -6,7 +6,7 @@ import java.util.List;
 
 public class F5Steganography {
     public static void hideMessage(List<int[]> blocks, int N, int M, String message) {
-        int max = Math.min(63 - N, 32), messageCounter = 0;
+        int max = Math.min(64 - N, 32), messageCounter = 0;
         int c1, c2, c3, x1, x2;
         for (int[] block : blocks) {
             for (int i = 4, j = 0; i + 2 < max && j < M && messageCounter + 1 < message.length(); i += 3, j++) {
@@ -25,9 +25,9 @@ public class F5Steganography {
         }
     }
 
-    public static String readMessage(List<int[]> blocks, int M) {
+    public static String readMessage(List<int[]> blocks, int N, int M) {
         StringBuilder bits = new StringBuilder();
-        int max = Math.min(63 - N, 32);
+        int max = Math.min(64 - N, 32);
         long limit = 0;
         int c1, c2, c3;
         for (int[] block : blocks) {

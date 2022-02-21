@@ -239,7 +239,7 @@ public class DCTProcessing {
 
         for (double[] block : blocks) {
             int[] quantizedBlock = Arrays.stream(block).mapToInt(value -> (int) value).toArray();
-            for (int i = 63; i >= 63 - N; i--) {
+            for (int i = 63; i >= 64 - N; i--) {
                 quantizedBlock[i] = 0;
             }
             quantized.add(quantizedBlock);
