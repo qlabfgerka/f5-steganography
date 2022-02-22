@@ -15,7 +15,7 @@
 #### COMPRESSION
 
 ```
-    <input image> h <input text> <N> <M>
+    <input image> h <input text> <N> <M> <key>
     
     <input image> - path to the input image
                     (if in assets, path will be assets\images\image.ext)
@@ -24,12 +24,13 @@
                    (if in assets, path will be assets\text\text.txt)
     <N> - compression threshold
     <M> - number of unique sets
+    <key> - key for encryption
 ```
 
 #### DECOMPRESSION
 
 ```
-    <compressed binary> e <output file> <N> <M>
+    <compressed binary> e <output file> <N> <M> <key>
     
     <compressed binary> - path to the input binary 
                     (result of compression)
@@ -38,6 +39,7 @@
     <output file> - path, where the output file will be created
     <N> - compression threshold
     <M> - number of unique sets
+    <key> - key for encryption
 ```
 
 ### Configuration
