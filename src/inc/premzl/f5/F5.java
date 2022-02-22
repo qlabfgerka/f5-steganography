@@ -1,7 +1,6 @@
 package inc.premzl.f5;
 
 import inc.premzl.f5.Cryptography.Cryptography;
-import inc.premzl.f5.Metrics.Metrics;
 import inc.premzl.f5.Models.DecompressionWrapper;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -24,7 +23,7 @@ public class F5 {
     }
 
     public static void main(String[] args) throws Exception {
-        //if (args.length != 5) throw new Exception("Invalid arguments size");
+        if (args.length != 5) throw new Exception("Invalid arguments size");
         final String compressOutput = "assets\\images\\out.bin";
         final String decodedOutput = "assets\\text\\out.txt";
 
@@ -55,13 +54,6 @@ public class F5 {
             blocks = IDCT(blocks);
             writeImage(args[2], getMat(blocks, wrapper.getHeight(), wrapper.getWidth()));
             writeToFile(decodedOutput, message);
-        } else {
-            System.out.println("PSNR: " + Metrics.PSNR(openImage(args[0]), openImage(args[1])));
-            System.out.println("SHANNON ENTROPY ORIGINAL: " + Metrics.shannonEntropy(openImage(args[0])));
-            System.out.println("SHANNON ENTROPY EDITED: " + Metrics.shannonEntropy(openImage(args[1])));
-            System.out.println("BLOKOVNOST ORIGINAL: " + Metrics.blockage(openImage(args[0])));
-            System.out.println("BLOKOVNOST EDITED: " + Metrics.blockage(openImage(args[1])));
         }
-
     }
 }
