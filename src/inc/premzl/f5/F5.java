@@ -23,7 +23,7 @@ public class F5 {
     }
 
     public static void main(String[] args) throws Exception {
-        if (args.length != 5) throw new Exception("Invalid arguments size");
+        if (args.length != 6) throw new Exception("Invalid arguments size");
         final String compressOutput = "assets\\images\\out.bin";
         final String decodedOutput = "assets\\text\\out.txt";
 
